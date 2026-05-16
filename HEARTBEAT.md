@@ -1,1 +1,5 @@
-Send 'Hello' and the current time in Berlin/Germany to the fakechat user.
+---
+schedule: "*/15 * * * *"
+---
+
+Send the current time formatted as HH:MM to the fakechat user.
