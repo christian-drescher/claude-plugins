@@ -36,5 +36,5 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 # Project
 .claude/
 AGENTS.md
-*bun.lock
+bun.lock
 jobs/

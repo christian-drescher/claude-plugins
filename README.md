@@ -18,6 +18,12 @@ claude plugin marketplace add christian-drescher/claude-plugins --scope local
 
 ## scheduler-channel plugin
 
+Create a `jobs/` directory in your project home. This is where the `scheduler-channel` will pick up your scheduled tasks:
+
+```bash
+mkdir jobs
+```
+
 Install the plugin:
 
 ```bash
@@ -57,4 +63,17 @@ Events arrive in Claude's context as:
 <channel source="scheduler" type="heartbeat">
 Your task description here.
 </channel>
+```
+
+## Example
+
+This sends the current time to the fakechat channel.
+
+```yaml
+---
+schedule: "*/15 * * * *"
+type: "heartbeat"
+---
+
+Send the current time formatted as HH:MM to the fakechat user.
 ```
