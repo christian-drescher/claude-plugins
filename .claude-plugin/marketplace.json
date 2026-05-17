@@ -6,7 +6,7 @@
   "plugins": [
     {
       "name": "scheduler-channel",
-      "description": "",
+      "description": "A one-way MCP channel that pushes scheduled job notifications into a Claude Code session. Jobs are markdown files with cron schedules defined in YAML frontmatter.",
       "category": "productivity",
       "source": "./scheduler-channel"
     }
