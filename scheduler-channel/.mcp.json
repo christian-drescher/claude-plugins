@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "scheduler": {
+      "command": "bun",
+      "args": ["./scheduler-channel/scheduler.ts"]
+    }
+  }
+}

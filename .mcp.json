@@ -1,8 +1,0 @@
-{
-  "mcpServers": {
-    "heartbeat": {
-      "command": "bun",
-      "args": ["./heartbeat-channel/heartbeat.ts"]
-    }
-  }
-}

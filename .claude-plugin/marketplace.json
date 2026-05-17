@@ -1,0 +1,14 @@
+{
+  "name": "christian-drescher-claude-plugins",
+  "owner": {
+    "name": "christian-drescher"
+  },
+  "plugins": [
+    {
+      "name": "scheduler-channel",
+      "description": "",
+      "category": "productivity",
+      "source": "./scheduler-channel"
+    }
+  ]
+}

@@ -34,8 +34,7 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 .DS_Store
 
 # Project
+.claude/
 AGENTS.md
 *bun.lock
-heartbeat-channel/*.md
-heartbeat-channel/index.ts
-heartbeat-channel/tsconfig.json
+jobs/
