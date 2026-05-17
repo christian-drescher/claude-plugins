@@ -2,7 +2,7 @@
   "mcpServers": {
     "scheduler": {
       "command": "bun",
-      "args": ["./scheduler-channel/scheduler.ts"]
+      "args": ["run", "--cwd", "${CLAUDE_PLUGIN_ROOT}", "--shell=bun", "--silent", "start"]
     }
   }
 }

@@ -3,6 +3,9 @@
   "module": "scheduler.ts",
   "type": "module",
   "private": true,
+  "scripts": {
+    "start": "bun install --no-summary && bun scheduler.ts"
+  },
   "devDependencies": {
     "@types/bun": "latest"
   },

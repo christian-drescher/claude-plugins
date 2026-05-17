@@ -1,6 +1,6 @@
 {
     "name": "scheduler-channel",
     "description": "A one-way MCP channel that pushes scheduled job notifications into a Claude Code session. Jobs are markdown files with cron schedules defined in YAML frontmatter.",
-    "version": "0.0.1",
-    "keywords": ["cron", "heartbeat", "scheduler", "daemon"]
+    "version": "0.0.2",
+    "keywords": ["cron", "heartbeat", "scheduler"]
 }
