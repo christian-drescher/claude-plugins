@@ -1,6 +1,6 @@
 {
-  "name": "heartbeat-channel",
-  "module": "index.ts",
+  "name": "scheduler-channel",
+  "module": "scheduler.ts",
   "type": "module",
   "private": true,
   "devDependencies": {
