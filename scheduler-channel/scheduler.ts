@@ -1,10 +1,10 @@
 #!/usr/bin/env bun
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { resolve, dirname } from "path";
+import { resolve } from "path";
 import { readdir } from "fs/promises";
 
-const JOBS_DIR = resolve(dirname(import.meta.filename), "../jobs");
+const JOBS_DIR = resolve(process.env.CLAUDE_PROJECT_DIR ?? process.cwd(), "jobs");
 
 // --- Frontmatter parsing ---
 
