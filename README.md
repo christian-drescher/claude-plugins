@@ -10,17 +10,30 @@ A plugin marketplace for [Claude Code](https://code.claude.com) that distributes
 
 ## Installation
 
-Add this marketplace, then install the plugin:
+Add this marketplace:
 
 ```bash
 claude plugin marketplace add christian-drescher/claude-plugins --scope local
+```
+
+## scheduler-channel plugin
+
+Install the plugin:
+
+```bash
 claude plugin install scheduler-channel@christian-drescher-claude-plugins --scope local
 ```
 
-Start Claude Code with the development channel flag (required during the research preview for custom channels):
+Start Claude Code with the development channel flag (required during the research preview for custom channels), if you want :
 
 ```bash
-claude --dangerously-load-development-channels server:scheduler
+claude --dangerously-load-development-channels plugin:scheduler-channel@christian-drescher-claude-plugin
+```
+
+Always list all channels, e.g., fakechat from  claude-plugins-official:
+
+```bash
+claude --channels plugin:fakechat@claude-plugins-official --dangerously-load-development-channels plugin:scheduler-channel@christian-drescher-claude-plugin
 ```
 
 ## Usage
