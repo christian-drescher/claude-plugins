@@ -2,7 +2,10 @@
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { resolve } from "path";
-import { mkdir, readdir } from "fs/promises";
+import { mkdir, readdir, writeFile } from "fs/promises";
+
+const PLUGIN_ROOT = process.env.CLAUDE_PLUGIN_ROOT ?? process.cwd();
+await writeFile(resolve(PLUGIN_ROOT, "scheduler.pid"), String(process.pid));
 
 const JOBS_DIR = resolve(process.env.CLAUDE_PROJECT_DIR ?? process.cwd(), "jobs");
 await mkdir(JOBS_DIR, { recursive: true });
@@ -84,7 +87,7 @@ function cronMatches(expr: string, date: Date): boolean {
 // --- MCP server setup ---
 
 const mcp = new Server(
-  { name: "scheduler", version: "0.0.5" },
+  { name: "scheduler", version: "0.0.6" },
   {
     capabilities: { experimental: { "claude/channel": {} } },
     instructions:

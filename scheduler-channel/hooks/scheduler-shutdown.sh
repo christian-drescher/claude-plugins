@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-PID_FILE="${CLAUDE_PLUGIN_ROOT}/.scheduler.pid"
+PID_FILE="${CLAUDE_PLUGIN_ROOT}/scheduler.pid"
 
 if [[ ! -f "$PID_FILE" ]]; then
   exit 0
