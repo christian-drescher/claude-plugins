@@ -94,10 +94,10 @@ claude plugin install telegram-channel@christian-drescher-claude-plugins --scope
 ### 3. Save the token
 
 ```bash
-/telegram:configure 123456789:AAHfiqksKZ8...
+/telegram-channel:configure 123456789:AAHfiqksKZ8...
 ```
 
-This writes `TELEGRAM_BOT_TOKEN=...` to `.telegram/.env` in your project root.
+This writes `TELEGRAM_BOT_TOKEN=...` to `.telegram/.env` in your project root. Restart claude.
 
 ### 4. Launch with the channel
 
@@ -116,7 +116,7 @@ claude --dangerously-load-development-channels plugin:scheduler-channel@christia
 DM your bot on Telegram — it replies with a 6-character code. In your Claude Code session:
 
 ```bash
-/telegram:access pair <code>
+/telegram-channel:access pair <code>/tele
 ```
 
 ### 6. Lock down
@@ -124,5 +124,5 @@ DM your bot on Telegram — it replies with a 6-character code. In your Claude C
 Once paired, switch to allowlist mode so strangers can't trigger pairing codes:
 
 ```bash
-/telegram:access policy allowlist
+/telegram-channel:access policy allowlist
 ```
