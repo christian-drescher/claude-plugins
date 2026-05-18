@@ -2,9 +2,10 @@
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { resolve } from "path";
-import { readdir } from "fs/promises";
+import { mkdir, readdir } from "fs/promises";
 
 const JOBS_DIR = resolve(process.env.CLAUDE_PROJECT_DIR ?? process.cwd(), "jobs");
+await mkdir(JOBS_DIR, { recursive: true });
 
 // --- Frontmatter parsing ---
 
@@ -94,22 +95,6 @@ const mcp = new Server(
 );
 
 await mcp.connect(new StdioServerTransport());
-
-// --- Validate on startup ---
-
-try {
-  const jobs = await loadJobs();
-  if (jobs.length === 0) {
-    throw new Error("No .md job files found in jobs/ directory");
-  }
-  for (const job of jobs) {
-    cronMatches(job.schedule, new Date()); // validate expression parses
-    console.error(`[scheduler] Loaded job "${job.name}" (type=${job.type}) with schedule: ${job.schedule}`);
-  }
-} catch (err) {
-  console.error(`[scheduler] Fatal:`, (err as Error).message);
-  process.exit(1);
-}
 
 // --- Scheduling loop (checks every 60s) ---
 
