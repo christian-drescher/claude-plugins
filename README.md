@@ -108,7 +108,7 @@ claude --dangerously-load-development-channels plugin:telegram-channel@christian
 Or combined with other channels:
 
 ```bash
-claude --dangerously-load-development-channels plugin:scheduler-channel@christian-drescher-claude-plugins,plugin:telegram-channel@christian-drescher-claude-plugins
+claude --dangerously-load-development-channels plugin:scheduler-channel@christian-drescher-claude-plugins --dangerously-load-development-channels plugin:telegram-channel@christian-drescher-claude-plugins
 ```
 
 ### 5. Pair
