@@ -7,6 +7,7 @@ A plugin marketplace for [Claude Code](https://code.claude.com) that distributes
 | Plugin | Description |
 |--------|-------------|
 | **scheduler-channel** | A one-way MCP channel that pushes scheduled job notifications into a Claude Code session. Jobs are markdown files with cron schedules defined in YAML frontmatter. |
+| **telegram-channel** | Bridges a Telegram bot to Claude Code. Forwards messages as channel notifications and exposes reply, react, and edit tools. Includes pairing-based access control. |
 
 ## Installation
 
@@ -76,4 +77,52 @@ type: "heartbeat"
 ---
 
 Send the current time formatted as HH:MM to the fakechat user.
+```
+
+## telegram-channel plugin
+
+### 1. Create a Telegram bot
+
+Open [@BotFather](https://t.me/BotFather) on Telegram, send `/newbot`, and follow the prompts. Copy the token (looks like `123456789:AAH...`).
+
+### 2. Install the plugin
+
+```bash
+claude plugin install telegram-channel@christian-drescher-claude-plugins --scope local
+```
+
+### 3. Save the token
+
+```bash
+/telegram:configure 123456789:AAHfiqksKZ8...
+```
+
+This writes `TELEGRAM_BOT_TOKEN=...` to `.telegram/.env` in your project root.
+
+### 4. Launch with the channel
+
+```bash
+claude --dangerously-load-development-channels plugin:telegram-channel@christian-drescher-claude-plugins
+```
+
+Or combined with other channels:
+
+```bash
+claude --dangerously-load-development-channels plugin:scheduler-channel@christian-drescher-claude-plugins,plugin:telegram-channel@christian-drescher-claude-plugins
+```
+
+### 5. Pair
+
+DM your bot on Telegram — it replies with a 6-character code. In your Claude Code session:
+
+```bash
+/telegram:access pair <code>
+```
+
+### 6. Lock down
+
+Once paired, switch to allowlist mode so strangers can't trigger pairing codes:
+
+```bash
+/telegram:access policy allowlist
 ```
