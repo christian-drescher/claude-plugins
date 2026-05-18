@@ -1,13 +1,72 @@
 # christian-drescher-claude-plugins
 
-A plugin marketplace for [Claude Code](https://code.claude.com) that distributes custom plugins.
+A plugin marketplace for [Claude Code](https://code.claude.com) that turns it into a **personal assistant that never sleeps**.
+
+## Overview
+
+This marketplace provides the building blocks to assemble a highly-customizable personal assistant from scratch, with minimal dependencies. Think of it as an extremely bare OpenClaw variant built directly into Claude Code.
+
+**Key properties:**
+
+- **Always-on** — run Claude Code in a terminal multiplexer (`screen`, `tmux`) and it stays active 24/7, executing tasks on a schedule and responding to messages.
+- **No API pricing** — uses your existing Claude Code subscription directly. No Agents SDK, no separate billing.
+- **Built-in memory** — leverages Claude Code's auto-memory and `CLAUDE.md` for persistent context across sessions.
+- **Identity & personality** — populate `CLAUDE.md` to give the assistant a name, tone, and behavioral guidelines.
+- **Modular** — each plugin works independently or in combination. Install only what you need.
+- **Extensible** — integrate with any other skill that works with Claude Code.
+
+## How it works
+
+| Layer | Plugin | Role |
+|-------|--------|------|
+| Proactive | **scheduler-channel** | Fires recurring jobs on cron schedules — heartbeats, reminders, data pulls, integrations. |
+| Interactive | **telegram-channel** | Receives and replies to Telegram messages — lets you talk to your assistant from anywhere. |
+
+Combined, the two channels form a full-loop assistant: it acts on its own schedule *and* responds to you on demand.
+
+### Giving the assistant an identity
+
+Create or edit `CLAUDE.md` in your project root:
+
+```markdown
+You are Jarvis, a calm and concise personal assistant.
+Respond in English. Keep messages short unless asked for detail.
+When reporting weather, include a one-word emoji summary.
+```
+
+### Defining recurring jobs
+
+Drop `.md` files into the `jobs/` directory. Each file specifies a cron schedule in YAML frontmatter and a task description in the body:
+
+```yaml
+---
+schedule: "*/10 7-21 * * *"
+type: "weather-report"
+---
+
+Check the current weather and report it to the user on Telegram.
+```
+
+### Running permanently
+
+Start the assistant inside a terminal multiplexer so it survives disconnects:
+
+```bash
+screen -S assistant
+claude --dangerously-load-development-channels \
+  plugin:scheduler-channel@christian-drescher-claude-plugins \
+  --dangerously-load-development-channels \
+  plugin:telegram-channel@christian-drescher-claude-plugins
+```
+
+Detach with `Ctrl-a d`. Reattach anytime with `screen -r assistant`.
 
 ## Plugins
 
 | Plugin | Description |
 |--------|-------------|
 | **scheduler-channel** | A one-way MCP channel that pushes scheduled job notifications into a Claude Code session. Jobs are markdown files with cron schedules defined in YAML frontmatter. |
-| **telegram-channel** | Bridges a Telegram bot to Claude Code. Forwards messages as channel notifications and exposes reply, react, and edit tools. Includes pairing-based access control. |
+| **telegram-channel** | Fork of [Claude's official Telegram plugin](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/telegram) that bridges a Telegram bot to Claude Code. Forwards messages as channel notifications and exposes reply, react, and edit tools. Includes pairing-based access control. |
 
 ## Installation
 
@@ -16,6 +75,9 @@ Add this marketplace:
 ```bash
 claude plugin marketplace add christian-drescher/claude-plugins --scope local
 ```
+
+Each plugin can be installed and used independently — see the sections below. Use both if you want the full-loop assistant.
+
 
 ## scheduler-channel plugin
 
@@ -37,13 +99,7 @@ Start Claude Code with the development channel flag (required during the researc
 claude --dangerously-load-development-channels plugin:scheduler-channel@christian-drescher-claude-plugin
 ```
 
-Always list all channels, e.g., fakechat from  claude-plugins-official:
-
-```bash
-claude --channels plugin:fakechat@claude-plugins-official --dangerously-load-development-channels plugin:scheduler-channel@christian-drescher-claude-plugin
-```
-
-## Usage
+### Usage
 
 Drop `.md` files into the `jobs/` directory. Each file needs YAML frontmatter with a `schedule` field (cron expression) and an optional `type` field:
 
@@ -66,9 +122,9 @@ Your task description here.
 </channel>
 ```
 
-## Example
+### Example
 
-This sends the current time to the fakechat channel.
+This requests the current time.
 
 ```yaml
 ---
@@ -76,7 +132,7 @@ schedule: "*/15 * * * *"
 type: "heartbeat"
 ---
 
-Send the current time formatted as HH:MM to the fakechat user.
+Send the current time formatted as HH:MM to the user.
 ```
 
 ## telegram-channel plugin
@@ -116,7 +172,7 @@ claude --dangerously-load-development-channels plugin:scheduler-channel@christia
 DM your bot on Telegram — it replies with a 6-character code. In your Claude Code session:
 
 ```bash
-/telegram-channel:access pair <code>/tele
+/telegram-channel:access pair <code>
 ```
 
 ### 6. Lock down
@@ -125,4 +181,17 @@ Once paired, switch to allowlist mode so strangers can't trigger pairing codes:
 
 ```bash
 /telegram-channel:access policy allowlist
+```
+
+## Recommended but dangerous settings
+
+Add the following settings to `.claude/settings.local.json` if you trust the system and you do not want to approve every single command.
+
+```json
+{
+  "skipDangerousModePermissionPrompt": true,
+  "permissions": {
+    "defaultMode": "bypassPermissions"
+  }
+}
 ```
