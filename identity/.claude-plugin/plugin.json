@@ -1,0 +1,6 @@
+{
+    "name": "identity",
+    "description": "Hooks for reminding the agent of its identity and purpose.",
+    "version": "0.0.1",
+    "keywords": ["identity", "personality", "soul"]
+}
