@@ -4,8 +4,9 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { resolve } from "path";
 import { mkdir, readdir, writeFile } from "fs/promises";
 
-const PLUGIN_ROOT = process.env.CLAUDE_PLUGIN_ROOT ?? process.cwd();
-await writeFile(resolve(PLUGIN_ROOT, "scheduler.pid"), String(process.pid));
+const SCHEDULER_DIR = resolve(process.env.CLAUDE_PROJECT_DIR ?? process.cwd(), ".scheduler");
+await mkdir(SCHEDULER_DIR, { recursive: true });
+await writeFile(resolve(SCHEDULER_DIR, ".bot.pid"), String(process.pid));
 
 const JOBS_DIR = resolve(process.env.CLAUDE_PROJECT_DIR ?? process.cwd(), "jobs");
 await mkdir(JOBS_DIR, { recursive: true });
