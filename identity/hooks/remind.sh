@@ -23,14 +23,14 @@ fi
 count=$(<"$COUNT_FILE")
 
 if [[ "$HOOK_EVENT_NAME" == "PostCompact" ]]; then
-  count=-1
+  count=0
 else
   count=$((count + 1))
 fi
 
 echo "$count" > "$COUNT_FILE"
 
-if (( count % 100 == 0 )); then
+if (( count % 100 == 1 )); then
   jq -n --arg hookEventName "$HOOK_EVENT_NAME" --rawfile additionalContext "$IDENTITY_FILE" \
     '{hookEventName: $hookEventName, additionalContext: $additionalContext}'
 fi
