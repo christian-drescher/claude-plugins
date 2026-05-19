@@ -88,7 +88,7 @@ function cronMatches(expr: string, date: Date): boolean {
 // --- MCP server setup ---
 
 const mcp = new Server(
-  { name: "scheduler", version: "0.0.6" },
+  { name: "scheduler", version: "0.0.7" },
   {
     capabilities: { experimental: { "claude/channel": {} } },
     instructions:
