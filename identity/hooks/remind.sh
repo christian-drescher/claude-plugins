@@ -22,9 +22,7 @@ fi
 
 count=$(<"$COUNT_FILE")
 
-if [[ "$HOOK_EVENT_NAME" == "SessionStart" ]]; then
-  count=0
-elif [[ "$HOOK_EVENT_NAME" == "PostCompact" ]]; then
+if [[ "$HOOK_EVENT_NAME" == "PostCompact" ]]; then
   count=-1
 else
   count=$((count + 1))
