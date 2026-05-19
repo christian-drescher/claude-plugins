@@ -15,18 +15,10 @@ IDENTITY_DIR="${CLAUDE_PROJECT_DIR}/.identity"
 mkdir -p "$IDENTITY_DIR"
 
 COUNT_FILE="${IDENTITY_DIR}/${SESSION_ID}"
-if [[ ! -f "$COUNT_FILE" ]]; then
-  echo "0" > "$COUNT_FILE"
-fi
+echo "0" > "$COUNT_FILE"
 
-count=$(<"$COUNT_FILE")
-
-count=$((count + 1))
-
-echo "$count" > "$COUNT_FILE"
-
-if (( count % 30 == 0 )); then
-  echo "Reminder: $(head -n 1 "$IDENTITY_FILE")"
-fi
+# jq -n --arg hookEventName "$HOOK_EVENT_NAME" --rawfile additionalContext "$IDENTITY_FILE" \
+#   '{hookEventName: $hookEventName, additionalContext: $additionalContext}'
+cat "$IDENTITY_FILE"
 
 exit 0

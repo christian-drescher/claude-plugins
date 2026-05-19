@@ -10,7 +10,7 @@ This marketplace provides the building blocks to assemble a highly-customizable 
 
 - **Always-on** — run Claude Code in a terminal multiplexer (`screen`, `tmux`) and it stays active 24/7, executing tasks on a schedule and responding to messages.
 - **No API pricing** — uses your existing Claude Code subscription directly. No Agents SDK, no separate billing.
-- **Built-in memory** — leverages Claude Code's auto-memory and `CLAUDE.md` for persistent context across sessions.
+- **Built-in memory** — leverages Claude Code's auto-memory for persistent context across sessions.
 - **Identity & personality** — create an `IDENTITY.md` to give the assistant a name, tone, and behavioral guidelines that persist across compactions.
 - **Modular** — each plugin works independently or in combination. Install only what you need.
 - **Extensible** — integrate with any other skill that works with Claude Code.
@@ -31,7 +31,7 @@ This collection is developed and tested on **Linux**.
 
 | Layer | Plugin | Role |
 |-------|--------|------|
-| Identity | **identity** | Maintains the agent's identity in the context window. Ensures the agent never forgets who it is.  |
+| Identity | **identity** | Maintains the assistants's identity in the context window. Ensures the assistant never forgets who it is.  |
 | Proactive | **scheduler-channel** | Fires recurring jobs on cron schedules — heartbeats, reminders, data pulls, integrations. |
 | Interactive | **telegram-channel** | Receives and replies to Telegram messages — lets you talk to your assistant from anywhere. |
 
@@ -80,8 +80,8 @@ Detach with `Ctrl-a d`. Reattach anytime with `screen -r assistant`.
 
 | Plugin | Description |
 |--------|-------------|
-| **identity** | Uses [hooks](https://code.claude.com/docs/en/hooks) to inject the contents of `IDENTITY.md` into the agent's context window at session start, after context compaction, and every 100 user messages. |
-| **scheduler-channel** | A one-way MCP channel that pushes scheduled job notifications into a Claude Code session. Jobs are markdown files with cron schedules defined in YAML frontmatter. |
+| **identity** | Uses [hooks](https://code.claude.com/docs/en/hooks) to inject the contents of `IDENTITY.md` into the assistants's context window at session start, after context compaction, and a reminder every 30 user messages. |
+| **scheduler-channel** | A one-way MCP [channel](https://code.claude.com/docs/en/channels) that pushes scheduled job notifications into a Claude Code session. Jobs are markdown files with cron schedules defined in YAML frontmatter. |
 | **telegram-channel** | Fork of [Claude's official Telegram plugin](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/telegram) that bridges a Telegram bot to Claude Code. Forwards messages as channel notifications and exposes reply, react, and edit tools. Includes pairing-based access control. |
 
 ## Installation
@@ -103,7 +103,7 @@ Install the plugin:
 claude plugin install identity@christian-drescher-claude-plugins --scope local
 ```
 
-Create an `IDENTITY.md` in your project root with the agent's personality and behavioral guidelines:
+Create an `IDENTITY.md` in your project root with the assistants's personality and behavioral guidelines:
 
 ```markdown
 You are Jarvis, a calm and concise personal assistant.
@@ -111,11 +111,13 @@ Respond in English. Keep messages short unless asked for detail.
 When reporting weather, include a one-word emoji summary.
 ```
 
+> **Important:** The **first line** of `IDENTITY.md` serves as the assistants's condensed identity. During periodic reminders and after context compaction, only the first line is re-injected to keep context usage minimal while preventing identity drift. Make it a concise, self-contained statement.
+
 The plugin uses hooks to automatically inject this identity into the context window:
 
 - **On session start** — immediately loaded
-- **After compaction** — re-injected on the next user message so the identity survives context trimming
-- **Every 100 messages** — periodic reminder to prevent drift in long sessions
+- **After compaction** — re-injected so the identity survives context trimming
+- **Every 30 messages** — periodic reminder (first line only) to prevent drift in long sessions
 
 No configuration needed beyond creating `IDENTITY.md`. The plugin is a no-op if the file doesn't exist.
 
@@ -236,3 +238,9 @@ Add the following settings to `.claude/settings.local.json` if you trust the sys
   }
 }
 ```
+
+## Related projects
+
+- [moazbuilds/claudeclaw](https://github.com/moazbuilds/claudeclaw)
+- [aerolalit/claudeclaw](https://github.com/aerolalit/claudeclaw)
+- [TerrysPOV/ClaudeClaw-Plus](https://github.com/TerrysPOV/ClaudeClaw-Plus)
