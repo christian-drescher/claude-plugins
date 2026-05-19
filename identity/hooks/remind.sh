@@ -31,8 +31,9 @@ fi
 echo "$count" > "$COUNT_FILE"
 
 if (( count % 100 == 1 )); then
-  jq -n --arg hookEventName "$HOOK_EVENT_NAME" --rawfile additionalContext "$IDENTITY_FILE" \
-    '{hookEventName: $hookEventName, additionalContext: $additionalContext}'
+  cat "$IDENTITY_FILE"
+  # jq -n --arg hookEventName "$HOOK_EVENT_NAME" --rawfile additionalContext "$IDENTITY_FILE" \
+  #   '{hookEventName: $hookEventName, additionalContext: $additionalContext}'
 fi
 
 exit 0
