@@ -15,6 +15,12 @@
       "description": "Telegram channel for Claude Code \u2014 messaging bridge with built-in access control. Manage pairing, allowlists, and policy via /telegram-channel:access.",
       "category": "communication",
       "source": "./telegram-channel"
+    },
+    {
+      "name": "identity",
+      "description": "Hooks for reminding the agent of its identity and purpose.",
+      "category": "agent-architecture",
+      "source": "./identity"
     }
   ]
 }
