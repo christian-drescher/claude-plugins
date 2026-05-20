@@ -102,6 +102,12 @@ await mcp.connect(new StdioServerTransport());
 
 // --- Scheduling loop (checks every 60s) ---
 
+function formatTime(d: Date): string {
+  const date = d.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+  const time = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+  return `${date}, ${time}`;
+}
+
 const lastSentMinute = new Map<string, number>();
 
 setInterval(async () => {
@@ -118,7 +124,7 @@ setInterval(async () => {
         await mcp.notification({
           method: "notifications/claude/channel",
           params: {
-            content: job.body,
+            content: `[${formatTime(now)}]\n${job.body}`,
             meta: { type: job.type },
           },
         });

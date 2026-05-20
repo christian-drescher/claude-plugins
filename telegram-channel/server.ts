@@ -52,6 +52,12 @@ if (!TOKEN) {
 const INBOX_DIR = join(STATE_DIR, 'inbox')
 const PID_FILE = join(STATE_DIR, 'bot.pid')
 
+function formatTime(d: Date): string {
+  const date = d.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+  const time = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+  return `${date}, ${time}`;
+}
+
 // Telegram allows exactly one getUpdates consumer per token. If a previous
 // session crashed (SIGKILL, terminal closed) its server.ts grandchild can
 // survive as an orphan and hold the slot forever, so every new session sees
@@ -962,7 +968,7 @@ async function handleInbound(
   mcp.notification({
     method: 'notifications/claude/channel',
     params: {
-      content: text,
+      content: `[${formatTime(new Date())}]\n${text}`,
       meta: {
         chat_id,
         ...(msgId != null ? { message_id: String(msgId) } : {}),
