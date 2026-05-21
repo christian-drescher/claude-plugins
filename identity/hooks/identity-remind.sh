@@ -1,5 +1,5 @@
 #!/bin/bash
-# identity-remind.sh — Periodically reminds Claude of its identity.
+# identity-remind.sh — Periodically reminds the assistant of its identity.
 #
 # Triggered on: UserPromptSubmit
 #
