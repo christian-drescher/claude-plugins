@@ -12,7 +12,7 @@
     ],
     "PreToolUse": [
       {
-        "matcher": "mcp__plugin_telegram_telegram__reply",
+        "matcher": "mcp__plugin_telegram-channel_telegram__reply",
         "hooks": [
           {
             "type": "command",
