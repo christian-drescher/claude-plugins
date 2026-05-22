@@ -12,7 +12,7 @@ This marketplace provides the building blocks to assemble a highly-customizable 
 - **Scheduled tasks** — fires recurring jobs on schedules, including heartbeats.
 - **Time-aware** — message time prefixes help the assistant understand daily patterns.
 - **Always-on** — run in a terminal multiplexer (`screen`, `tmux`) and it stays active 24/7.
-- **No API pricing** — uses your existing Claude Code subscription directly. No Agents SDK, no separate billing. Including Claude subscription changes from July 15, 2026.
+- **No API pricing** — uses your existing Claude Code subscription directly. No Agents SDK, no separate billing. Including Claude subscription changes from June 15, 2026.
 - **Built-in memory** — leverages Claude Code's auto-memory for persistent context across sessions.
 - **Identity & personality** — create an `IDENTITY.md` to give the assistant a name, tone, and behavioral guidelines that persist across compactions.
 - **Modular** — each plugin works independently or in combination. Install only what you need.
