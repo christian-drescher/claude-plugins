@@ -27,7 +27,8 @@ This collection is developed and tested on **Linux**.
 | [Claude Code](https://code.claude.com) | Host environment |
 | [Bun](https://bun.sh) | JavaScript/TypeScript runtime (scheduler-channel, telegram-channel) |
 | `bash` | Hook scripts |
-| `jq` | JSON parsing in hook scripts (identity) |
+| `jq` | JSON parsing in hook scripts (identity-plugin, telegram-channel) |
+| `awk` | MarkdownV2 formatting in hook scripts (telegram-channel) |
 | `screen` or `tmux` | Terminal multiplexer for always-on operation (recommended) |
 
 ## How it works
