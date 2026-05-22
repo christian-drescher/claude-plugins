@@ -82,7 +82,7 @@ Detach with `Ctrl-a d`. Reattach anytime with `screen -r assistant`.
 |--------|-------------|
 | **identity** | Uses [hooks](https://code.claude.com/docs/en/hooks) to inject the contents of `IDENTITY.md` into the assistants's context window at session start, after context compaction, and a reminder every 30 user messages. |
 | **scheduler-channel** | A one-way MCP [channel](https://code.claude.com/docs/en/channels) that pushes scheduled job notifications into a Claude Code session. Jobs are markdown files with cron schedules defined in YAML frontmatter. |
-| **telegram-channel** | Fork of [Claude's official Telegram plugin](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/telegram) that bridges a Telegram bot to Claude Code. Forwards messages as channel notifications and exposes reply, react, and edit tools. Includes pairing-based access control. |
+| **telegram-channel** | Fork of [Claude's official Telegram plugin](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/telegram) that bridges a Telegram bot to Claude Code. Forwards messages, including images and attachments, as channel notifications and exposes reply, react, and edit tools. Includes pairing-based access control. |
 
 ## Installation
 
