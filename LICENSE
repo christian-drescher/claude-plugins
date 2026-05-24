@@ -27,7 +27,3 @@ Note on bundled code:
 The forked Telegram channel plugin in `telegram-channel/` is licensed under
 the Apache License, Version 2.0 — see `telegram-channel/LICENSE` for details.
 That license applies to that subdirectory only.
-
-The Telegram reply hook `telegram-channel/hooks/telegram-reply-format.sh` is
-copied from `https://github.com/aerolalit/claudeclaw/` and is licensed under
-the MIT License.

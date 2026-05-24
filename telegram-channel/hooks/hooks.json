@@ -9,17 +9,6 @@
           }
         ]
       }
-    ],
-    "PreToolUse": [
-      {
-        "matcher": "mcp__plugin_telegram-channel_telegram__reply",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/hooks/telegram-reply-format.sh"
-          }
-        ]
-      }
     ]
   }
 }
