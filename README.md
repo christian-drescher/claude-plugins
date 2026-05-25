@@ -42,6 +42,70 @@ This collection is developed and tested on **Linux**.
 
 When combined, these plugins form a full-loop assistant: it acts on its own schedule *and* responds to you on demand, with its own personality.
 
+### Architecture
+
+```mermaid
+flowchart TD
+    %% Central session
+    claude["Claude Code Session"]
+
+    %% External actors
+    user(["You (Telegram)"])
+    telegram_api["Telegram Bot API"]
+
+    %% ── Identity ──
+    subgraph identity ["identity"]
+        id_hooks["Hooks: SessionStart\nPostCompact · Every 30 msgs"]
+        id_file[/"IDENTITY.md"/]
+        id_state[/".identity/{session_id}"/]
+    end
+
+    %% ── Scheduler ──
+    subgraph scheduler ["scheduler-channel"]
+        sched_chan["MCP Channel (one-way)"]
+        jobs_dir[/"jobs/*.md"/]
+        sched_pid[/".scheduler/.bot.pid"/]
+    end
+
+    %% ── Telegram ──
+    subgraph telegram ["telegram-channel"]
+        tg_chan["MCP Channel + Tools"]
+        tg_env[/".telegram/.env"/]
+        tg_access[/".telegram/access.json"/]
+        tg_inbox[/".telegram/inbox/"/]
+    end
+
+    %% ── Limit Monitor ──
+    subgraph limitmon ["limit-monitor"]
+        lm_status["Statusline Hook"]
+        lm_usage[/".current_usage.md"/]
+        lm_skill["usage skill"]
+    end
+
+    %% ── Connections ──
+    id_file --> id_hooks
+    id_hooks -- "injects identity\ninto context" --> claude
+    id_hooks -. "tracks count" .-> id_state
+
+    jobs_dir --> sched_chan
+    sched_chan -- "scheduled\nnotifications" --> claude
+    sched_chan -. "writes PID" .-> sched_pid
+
+    user -- "sends messages" --> telegram_api
+    telegram_api --> tg_chan
+    tg_chan -- "incoming\nmessages" --> claude
+    claude -- "reply · react\nedit · download" --> tg_chan
+    tg_chan --> telegram_api --> user
+    tg_chan -. "reads" .-> tg_env
+    tg_chan -. "reads/writes" .-> tg_access
+    tg_chan -. "downloads to" .-> tg_inbox
+
+    claude -- "rate-limit data\n(every turn)" --> lm_status
+    lm_status -. "writes" .-> lm_usage
+    lm_skill -. "reads" .-> lm_usage
+    lm_skill -- "exposes pacing\ndata on demand" --> claude
+```
+
 ### Giving the assistant an identity
 
 Create an `IDENTITY.md` file in your project root:
