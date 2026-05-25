@@ -27,8 +27,7 @@ This collection is developed and tested on **Linux**.
 |------------|---------|
 | [Claude Code](https://code.claude.com) | Host environment |
 | [Bun](https://bun.sh) | JavaScript/TypeScript runtime (scheduler-channel, telegram-channel) |
-| `bash` | Hook scripts |
-| `jq` | JSON parsing in hook scripts (identity, telegram-channel, limit-monitor) |
+| `bash` and `jq` | Hook scripts |
 | `screen` or `tmux` | Terminal multiplexer for always-on operation (recommended) |
 
 ## How it works
@@ -163,7 +162,6 @@ claude plugin marketplace add christian-drescher/claude-plugins --scope local
 ```
 
 Each plugin can be installed and used independently — see the sections below. Use both if you want the full-loop assistant.
-
 
 ## identity plugin
 
