@@ -61,7 +61,8 @@ VARS=$(echo "$PAYLOAD" | jq -r '
   (($s_elapsed_clamped / 604800) * 100) as $s_elapsed_pct |
   
   # Virtual relative percentage = (Quota Used / Time Elapsed) * 100
-  (if $s_elapsed_pct > 0 then (($s_used / $s_elapsed_pct) * 100) else 0 end) as $s_virtual |
+  # Guard: require >= 1% elapsed to avoid division-by-near-zero at window start
+  (if $s_elapsed_pct >= 1 then (($s_used / $s_elapsed_pct) * 100) else 0 end) as $s_virtual |
   
   # Calculate 5-hour virtual pacing
   ($f_reset - 18000) as $f_start |
@@ -72,18 +73,19 @@ VARS=$(echo "$PAYLOAD" | jq -r '
   (($f_elapsed_clamped / 18000) * 100) as $f_elapsed_pct |
   
   # Virtual relative percentage = (Quota Used / Time Elapsed) * 100
-  (if $f_elapsed_pct > 0 then (($f_used / $f_elapsed_pct) * 100) else 0 end) as $f_virtual |
+  # Guard: require >= 1% elapsed to avoid division-by-near-zero at window start
+  (if $f_elapsed_pct >= 1 then (($f_used / $f_elapsed_pct) * 100) else 0 end) as $f_virtual |
   
-  # Output as tab-separated values
-  [ $model, $ctx, $f_used, $s_used, $f_rem_str, $s_rem_str, $s_virtual, $f_virtual ] | @tsv
+  # Output as tab-separated values (round percentages to integers)
+  [ $model, ($ctx|round), ($f_used|round), ($s_used|round), $f_rem_str, $s_rem_str, ($s_virtual|round), ($f_virtual|round), $f_reset_iso ] | @tsv
 ')
 
 # 3. Destructure the TSV row into named bash variables
-IFS=$'\t' read -r MODEL CONTEXT FIVE_USED SEVEN_USED FIVE_REM SEVEN_REM SEVEN_VIRTUAL FIVE_VIRTUAL <<< "$VARS"
+IFS=$'\t' read -r MODEL CONTEXT FIVE_USED SEVEN_USED FIVE_REM SEVEN_REM SEVEN_VIRTUAL FIVE_VIRTUAL FIVE_RESET_ISO <<< "$VARS"
 
-# 4. Format the virtual percentages to 1 decimal place
-SEVEN_VIRTUAL_FMT=$(printf "%.1f" "$SEVEN_VIRTUAL")
-FIVE_VIRTUAL_FMT=$(printf "%.1f" "$FIVE_VIRTUAL")
+# 4. Format the virtual percentages to whole numbers
+SEVEN_VIRTUAL_FMT=$(printf "%.0f" "$SEVEN_VIRTUAL")
+FIVE_VIRTUAL_FMT=$(printf "%.0f" "$FIVE_VIRTUAL")
 
 # 5. Write structured data for the "usage" skill to read via dynamic injection
 cat <<EOF > ${CLAUDE_PROJECT_DIR}/.current_usage.md
@@ -92,6 +94,7 @@ Current Usage Limits
 - 5-hour quota used: ${FIVE_USED}% (Resets in: $FIVE_REM)
 - 7-day pacing: ${SEVEN_VIRTUAL_FMT}%
 - 7-day quota used: ${SEVEN_USED}% (Resets in: $SEVEN_REM)
+- 5-hour reset time (raw): ${FIVE_RESET_ISO}
 EOF
 
 # 6. Emit the compact status line that Claude Code renders below the prompt
