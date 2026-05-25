@@ -13,6 +13,7 @@ This marketplace provides the building blocks to assemble a highly-customizable 
 - **Time-aware** — message time prefixes help the assistant understand daily patterns.
 - **Always-on** — run in a terminal multiplexer (`screen`, `tmux`) and it stays active 24/7.
 - **No API pricing** — uses your existing Claude Code subscription directly. No Agents SDK, no separate billing. Including Claude subscription changes from June 15, 2026.
+- **Subscription-limit aware** — tracks 5-hour and 7-day rate-limit pacing in real time so the assistant (or scheduled jobs) can adapt behavior to remaining quota.
 - **Built-in memory** — leverages Claude Code's auto-memory for persistent context across sessions.
 - **Identity & personality** — create an `IDENTITY.md` to give the assistant a name, tone, and behavioral guidelines that persist across compactions.
 - **Modular** — each plugin works independently or in combination. Install only what you need.
@@ -27,7 +28,7 @@ This collection is developed and tested on **Linux**.
 | [Claude Code](https://code.claude.com) | Host environment |
 | [Bun](https://bun.sh) | JavaScript/TypeScript runtime (scheduler-channel, telegram-channel) |
 | `bash` | Hook scripts |
-| `jq` | JSON parsing in hook scripts (identity-plugin, telegram-channel) |
+| `jq` | JSON parsing in hook scripts (identity, telegram-channel, limit-monitor) |
 | `screen` or `tmux` | Terminal multiplexer for always-on operation (recommended) |
 
 ## How it works
@@ -37,6 +38,7 @@ This collection is developed and tested on **Linux**.
 | Identity | **identity** | Maintains the assistants's identity in the context window. Ensures the assistant never forgets who it is.  |
 | Proactive | **scheduler-channel** | Fires recurring jobs on cron schedules — heartbeats, reminders, data pulls, integrations. |
 | Interactive | **telegram-channel** | Receives and replies to Telegram messages — lets you talk to your assistant from anywhere. |
+| Awareness | **limit-monitor** | Tracks subscription rate-limit pacing and exposes usage data to the assistant and scheduled jobs. |
 
 When combined, these plugins form a full-loop assistant: it acts on its own schedule *and* responds to you on demand, with its own personality.
 
@@ -86,6 +88,7 @@ Detach with `Ctrl-a d`. Reattach anytime with `screen -r assistant`.
 | **identity** | Uses [hooks](https://code.claude.com/docs/en/hooks) to inject the contents of `IDENTITY.md` into the assistants's context window at session start, after context compaction, and a reminder every 30 user messages. |
 | **scheduler-channel** | A one-way MCP [channel](https://code.claude.com/docs/en/channels) that pushes scheduled job notifications into a Claude Code session. Jobs are markdown files with cron schedules defined in YAML frontmatter. |
 | **telegram-channel** | Fork of [Claude's official Telegram plugin](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/telegram) that bridges a Telegram bot to Claude Code. Forwards messages, including images and attachments, as channel notifications and exposes reply, react, and edit tools. Includes pairing-based access control. |
+| **limit-monitor** | Tracks Claude subscription rate-limit pacing (5-hour and 7-day windows) via a [statusline](https://code.claude.com/docs/en/statusline) hook; exposes a `usage` skill so the assistant can query its own quota consumption. |
 
 ## Installation
 
@@ -123,7 +126,6 @@ The plugin uses hooks to automatically inject this identity into the context win
 - **Every 30 messages** — periodic reminder (first line only) to prevent drift in long sessions
 
 No configuration needed beyond creating `IDENTITY.md`. The plugin is a no-op if the file doesn't exist.
-
 
 ## scheduler-channel plugin
 
@@ -228,6 +230,41 @@ Once paired, switch to allowlist mode so strangers can't trigger pairing codes:
 ```bash
 /telegram-channel:access policy allowlist
 ```
+
+## limit-monitor plugin
+
+Tracks your Claude subscription's rate-limit pacing across the 5-hour and 7-day windows. The primary use case is **conditioning scheduled jobs on remaining quota** — e.g., skip expensive tasks when pacing exceeds 100%, or defer non-urgent work until the window resets.
+
+### Installation
+
+Install the plugin:
+
+```bash
+claude plugin install limit-monitor@christian-drescher-claude-plugins --scope local
+```
+
+Then run the setup command inside your Claude Code session to register the statusline hook:
+
+```
+/limit-monitor:setup
+```
+
+This writes a `statusLine` entry to `.claude/settings.local.json` in the project root, pointing at the plugin's `statusline.sh` script. Re-run after updating the plugin to pick up the new path.
+
+### How it works
+
+1. The [statusline](https://code.claude.com/docs/en/statusline) hook runs on every assistant turn and receives rate-limit data from Claude Code.
+2. It computes **pacing** — `(quota_used% / time_elapsed_in_window%) × 100` — for both the 5-hour and 7-day windows. Values below 100% indicate sustainable consumption; above 100% means usage is outpacing the budget.
+3. It writes a `.current_usage.md` file in the project root, which the built-in `usage` skill reads on demand. Ask the assistant "what's my current usage?" to see it.
+4. It emits a compact one-liner rendered in the terminal status bar.
+
+### Removing the statusline
+
+```
+/limit-monitor:setup remove
+```
+
+> ⚠️ **Warning: risks of self-monitoring.** Exposing limit data to the assistant can cause it to preemptively throttle its own reasoning depth, skip verification steps, or produce lower-quality output in an attempt to "conserve" budget. This defeats the purpose of having a capable model. **Use limit data for scheduling decisions** (defer or skip jobs when quota is tight) **— not as a signal for the assistant to reduce effort on the current task.** If you instruct the assistant to be frugal with its quota, expect degraded output quality.
 
 ## Recommended but dangerous settings
 

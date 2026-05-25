@@ -89,13 +89,12 @@ FIVE_VIRTUAL_FMT=$(printf "%.0f" "$FIVE_VIRTUAL")
 
 # 5. Write structured data for the "usage" skill to read via dynamic injection
 cat <<EOF > ${CLAUDE_PROJECT_DIR}/.current_usage.md
-Current Usage Limits
+Current Usage Limits:
 - 5-hour pacing: ${FIVE_VIRTUAL_FMT}%
 - 5-hour quota used: ${FIVE_USED}% (Resets in: $FIVE_REM)
 - 7-day pacing: ${SEVEN_VIRTUAL_FMT}%
 - 7-day quota used: ${SEVEN_USED}% (Resets in: $SEVEN_REM)
-- 5-hour resets_at (epoch): ${FIVE_RESETS_AT}
 EOF
 
 # 6. Emit the compact status line that Claude Code renders below the prompt
-echo "[$MODEL] Ctx: ${CONTEXT}% | 5h: ${FIVE_USED}% Pace: ${FIVE_VIRTUAL_FMT}% (In $FIVE_REM) | 7d: ${SEVEN_USED}% Pace: ${SEVEN_VIRTUAL_FMT}% (In $SEVEN_REM)"
+echo "[$MODEL] Ctx: ${CONTEXT}% | 5h: ${FIVE_USED}% 5h-pace: ${FIVE_VIRTUAL_FMT}% (Resets in $FIVE_REM) | 7d: ${SEVEN_USED}% 7d-pace: ${SEVEN_VIRTUAL_FMT}% (Resets in $SEVEN_REM)"
