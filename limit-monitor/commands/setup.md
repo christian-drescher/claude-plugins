@@ -1,6 +1,6 @@
 ---
 name: setup
-description: Install or update the limit-monitor statusline hook in the current project's settings.
+description: Install, update, or remove the limit-monitor statusline hook in the current project's settings.
 allowed-tools:
   - Read
   - Write
@@ -10,9 +10,14 @@ allowed-tools:
 
 # /limit-monitor:setup
 
-Install or update the statusline hook for this plugin in the current project.
+Install, update, or remove the statusline hook for this plugin in the current project.
 
-## What to do
+## Determine intent
+
+- **Install or update** (default): set or overwrite the `"statusLine"` key in project settings.
+- **Remove**: only if the user explicitly asks to remove/uninstall the statusline. Delete the `"statusLine"` key.
+
+## Install / Update
 
 1. Resolve the plugin root path: `${CLAUDE_PLUGIN_ROOT}`
 2. Target file: `${CLAUDE_PROJECT_DIR}/.claude/settings.local.json`
@@ -23,11 +28,20 @@ Install or update the statusline hook for this plugin in the current project.
    {
      "statusLine": {
        "type": "command",
-       "command": "\"PLUGIN_ROOT/statusline/statusline.sh\""
+       "command": "PLUGIN_ROOT/statusline/statusline.sh"
      }
    }
    ```
    This overwrites any previous `"statusLine"` value, which ensures the command path stays current when the plugin location or version changes.
 6. Write the merged JSON back to the target file.
 7. Confirm to the user that the statusline hook was installed (or updated if one was already present).
-8. If the user explicitly asks to **remove** the hook, delete the `"statusLine"` key from the file (leave other keys intact; delete the file if it becomes `{}`).
+
+## Remove
+
+Only perform these steps if the user explicitly asks to remove/uninstall the statusline hook.
+
+1. Target file: `${CLAUDE_PROJECT_DIR}/.claude/settings.local.json`
+2. Read the target file. If it does not exist, inform the user there is nothing to remove.
+3. Delete the `"statusLine"` key from the JSON (leave other keys intact).
+4. If the resulting object is empty (`{}`), delete the file.
+5. Confirm to the user that the statusline hook was removed.

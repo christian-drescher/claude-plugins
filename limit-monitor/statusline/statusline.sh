@@ -29,12 +29,12 @@ VARS=$(echo "$PAYLOAD" | jq -r '
   (.context_window.used_percentage // 0) as $ctx |
   (.rate_limits.five_hour.used_percentage // 0) as $f_used |
   (.rate_limits.seven_day.used_percentage // 0) as $s_used |
-  (.rate_limits.five_hour.reset_time // "") as $f_reset_iso |
-  (.rate_limits.seven_day.reset_time // "") as $s_reset_iso |
+  (.rate_limits.five_hour.resets_at // 0) as $f_resets_at |
+  (.rate_limits.seven_day.resets_at // 0) as $s_resets_at |
   
-  # Parse ISO8601 dates to Unix Epochs (fallback to future times if missing)
-  (if $f_reset_iso != "" then ($f_reset_iso | fromdateiso8601) else (now + 18000) end) as $f_reset |
-  (if $s_reset_iso != "" then ($s_reset_iso | fromdateiso8601) else (now + 604800) end) as $s_reset |
+  # Use resets_at directly (already Unix epoch seconds); fallback if absent
+  (if $f_resets_at > 0 then $f_resets_at else (now + 18000) end) as $f_reset |
+  (if $s_resets_at > 0 then $s_resets_at else (now + 604800) end) as $s_reset |
   
   # Calculate remaining seconds (preventing negative values if already reset)
   ([0, $f_reset - now] | max) as $f_delta |
@@ -77,11 +77,11 @@ VARS=$(echo "$PAYLOAD" | jq -r '
   (if $f_elapsed_pct >= 1 then (($f_used / $f_elapsed_pct) * 100) else 0 end) as $f_virtual |
   
   # Output as tab-separated values (round percentages to integers)
-  [ $model, ($ctx|round), ($f_used|round), ($s_used|round), $f_rem_str, $s_rem_str, ($s_virtual|round), ($f_virtual|round), $f_reset_iso ] | @tsv
+  [ $model, ($ctx|round), ($f_used|round), ($s_used|round), $f_rem_str, $s_rem_str, ($s_virtual|round), ($f_virtual|round), $f_resets_at ] | @tsv
 ')
 
 # 3. Destructure the TSV row into named bash variables
-IFS=$'\t' read -r MODEL CONTEXT FIVE_USED SEVEN_USED FIVE_REM SEVEN_REM SEVEN_VIRTUAL FIVE_VIRTUAL FIVE_RESET_ISO <<< "$VARS"
+IFS=$'\t' read -r MODEL CONTEXT FIVE_USED SEVEN_USED FIVE_REM SEVEN_REM SEVEN_VIRTUAL FIVE_VIRTUAL FIVE_RESETS_AT <<< "$VARS"
 
 # 4. Format the virtual percentages to whole numbers
 SEVEN_VIRTUAL_FMT=$(printf "%.0f" "$SEVEN_VIRTUAL")
@@ -94,7 +94,7 @@ Current Usage Limits
 - 5-hour quota used: ${FIVE_USED}% (Resets in: $FIVE_REM)
 - 7-day pacing: ${SEVEN_VIRTUAL_FMT}%
 - 7-day quota used: ${SEVEN_USED}% (Resets in: $SEVEN_REM)
-- 5-hour reset time (raw): ${FIVE_RESET_ISO}
+- 5-hour resets_at (epoch): ${FIVE_RESETS_AT}
 EOF
 
 # 6. Emit the compact status line that Claude Code renders below the prompt
