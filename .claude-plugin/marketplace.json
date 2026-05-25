@@ -21,6 +21,12 @@
       "description": "Hooks for reminding the agent of its identity and purpose.",
       "category": "agent-architecture",
       "source": "./identity"
+    },
+    {
+      "name": "limit-monitor",
+      "description": "Simple statusline and skill for monitoring subscription usage pace and limits.",
+      "category": "productivity",
+      "source": "./limit-monitor"
     }
   ]
 }
