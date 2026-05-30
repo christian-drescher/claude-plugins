@@ -34,9 +34,9 @@ This collection is developed and tested on **Linux**.
 
 | Layer | Plugin | Role |
 |-------|--------|------|
-| Identity | **identity** | Maintains the assistants's identity in the context window. Ensures the assistant never forgets who it is.  |
 | Proactive | **scheduler-channel** | Fires recurring jobs on cron schedules — heartbeats, reminders, data pulls, integrations. |
 | Interactive | **telegram-channel** | Receives and replies to Telegram messages — lets you talk to your assistant from anywhere. |
+| Identity | **identity** | Maintains the assistants's identity in the context window. Ensures the assistant never forgets who it is.  |
 | Awareness | **limit-monitor** | Tracks subscription rate-limit pacing and exposes usage data to the assistant and scheduled jobs. |
 
 When combined, these plugins form a full-loop assistant: it acts on its own schedule *and* responds to you on demand, with its own personality.
@@ -148,9 +148,9 @@ Detach with `Ctrl-a d`. Reattach anytime with `screen -r assistant`.
 
 | Plugin | Description |
 |--------|-------------|
-| **identity** | Uses [hooks](https://code.claude.com/docs/en/hooks) to inject the contents of `IDENTITY.md` into the assistants's context window at session start, after context compaction, and a reminder every 30 user messages. |
 | **scheduler-channel** | A one-way MCP [channel](https://code.claude.com/docs/en/channels) that pushes scheduled job notifications into a Claude Code session. Jobs are markdown files with cron schedules defined in YAML frontmatter. |
 | **telegram-channel** | Fork of [Claude's official Telegram plugin](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/telegram) that bridges a Telegram bot to Claude Code. Forwards messages, including images and attachments, as channel notifications and exposes reply, react, and edit tools. Includes pairing-based access control. |
+| **identity** | Uses [hooks](https://code.claude.com/docs/en/hooks) to inject the contents of `IDENTITY.md` into the assistants's context window at session start, after context compaction, and a reminder every 30 user messages. Alternatively, replace/append to system prompt at the start of a session. |
 | **limit-monitor** | Tracks Claude subscription rate-limit pacing (5-hour and 7-day windows) via a [statusline](https://code.claude.com/docs/en/statusline) hook; exposes a `usage` skill so the assistant can query its own quota consumption. |
 
 ## Installation
@@ -162,32 +162,6 @@ claude plugin marketplace add christian-drescher/claude-plugins --scope local
 ```
 
 Each plugin can be installed and used independently — see the sections below. Use both if you want the full-loop assistant.
-
-## identity plugin
-
-Install the plugin:
-
-```bash
-claude plugin install identity@christian-drescher-claude-plugins --scope local
-```
-
-Create an `IDENTITY.md` in your project root with the assistants's personality and behavioral guidelines:
-
-```markdown
-You are Jarvis, a calm and concise personal assistant.
-Respond in English. Keep messages short unless asked for detail.
-When reporting weather, include a one-word emoji summary.
-```
-
-> **Important:** The **first line** of `IDENTITY.md` serves as the assistants's condensed identity. During periodic reminders and after context compaction, only the first line is re-injected to keep context usage minimal while preventing identity drift. Make it a concise, self-contained statement.
-
-The plugin uses hooks to automatically inject this identity into the context window:
-
-- **On session start** — immediately loaded
-- **After compaction** — re-injected so the identity survives context trimming
-- **Every 30 messages** — periodic reminder (first line only) to prevent drift in long sessions
-
-No configuration needed beyond creating `IDENTITY.md`. The plugin is a no-op if the file doesn't exist.
 
 ## scheduler-channel plugin
 
@@ -292,6 +266,50 @@ Once paired, switch to allowlist mode so strangers can't trigger pairing codes:
 ```bash
 /telegram-channel:access policy allowlist
 ```
+
+## identity plugin
+
+Install the plugin:
+
+```bash
+claude plugin install identity@christian-drescher-claude-plugins --scope local
+```
+
+Create an `IDENTITY.md` in your project root with the assistants's personality and behavioral guidelines:
+
+```markdown
+You are Jarvis, a calm and concise personal assistant.
+Respond in English. Keep messages short unless asked for detail.
+When reporting weather, include a one-word emoji summary.
+```
+
+> **Important:** The **first line** of `IDENTITY.md` serves as the assistants's condensed identity. During periodic reminders and after context compaction, only the first line is re-injected to keep context usage minimal while preventing identity drift. Make it a concise, self-contained statement.
+
+The plugin uses hooks to automatically inject this identity into the context window:
+
+- **On session start** — immediately loaded
+- **After compaction** — re-injected so the identity survives context trimming
+- **Every 30 messages** — periodic reminder (first line only) to prevent drift in long sessions
+
+No configuration needed beyond creating `IDENTITY.md`. The plugin is a no-op if the file doesn't exist.
+
+### Alternative: `--system-prompt-file` or `--append-system-prompt-file`
+
+Instead of the hook-based approach, you can replace the agent's system prompt directly at launch:
+
+```bash
+--system-prompt-file IDENTITY.md
+```
+or, append to the agent's system prompt:
+```bash
+--append-system-prompt-file IDENTITY.md
+```
+
+> ⚠️ **Warning:** Replacing/appending to system prompt affects [prompt caching](https://code.claude.com/docs/en/prompt-caching).
+
+This achieves the same effect — persisting personality and behavioral guidelines — without hooks or periodic re-injection. It's equally effective for single-session use; the hook-based plugin adds value primarily for long-running sessions where compaction might otherwise discard identity context.
+
+For guidance on crafting effective system prompts, see [Piebald-AI/claude-code-system-prompts](https://github.com/Piebald-AI/claude-code-system-prompts).
 
 ## limit-monitor plugin
 
