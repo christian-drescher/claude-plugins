@@ -50,7 +50,7 @@ if (!TOKEN) {
   process.exit(1)
 }
 const INBOX_DIR = join(STATE_DIR, 'inbox')
-const PID_FILE = join(STATE_DIR, 'bot.pid')
+const PID_FILE = join(STATE_DIR, '.bot.pid')
 
 function formatTime(d: Date): string {
   const date = d.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
