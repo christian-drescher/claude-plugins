@@ -267,6 +267,10 @@ Once paired, switch to allowlist mode so strangers can't trigger pairing codes:
 /telegram-channel:access policy allowlist
 ```
 
+### Formatting
+
+Replies default to Telegram's MarkdownV2 mode with automatic escaping — bold, italic, code, and links render natively.
+
 ## identity plugin
 
 Install the plugin:
@@ -364,3 +368,4 @@ Add the following settings to `.claude/settings.local.json` if you trust the sys
 - [moazbuilds/claudeclaw](https://github.com/moazbuilds/claudeclaw)
 - [aerolalit/claudeclaw](https://github.com/aerolalit/claudeclaw)
 - [TerrysPOV/ClaudeClaw-Plus](https://github.com/TerrysPOV/ClaudeClaw-Plus)
+- [k1p1l0/claude-telegram-supercharged](https://github.com/k1p1l0/claude-telegram-supercharged)
