@@ -365,6 +365,7 @@ Add the following settings to `.claude/settings.local.json` if you trust the sys
 
 ## Related projects
 
+- [danielmiessler/Personal_AI_Infrastructure](https://github.com/danielmiessler/Personal_AI_Infrastructure)
 - [moazbuilds/claudeclaw](https://github.com/moazbuilds/claudeclaw)
 - [aerolalit/claudeclaw](https://github.com/aerolalit/claudeclaw)
 - [TerrysPOV/ClaudeClaw-Plus](https://github.com/TerrysPOV/ClaudeClaw-Plus)
